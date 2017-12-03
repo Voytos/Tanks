@@ -130,7 +130,7 @@ GameStates.Game.prototype = {
 
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
-        this.launchMissile(this.game.rnd.integerInRange(50, this.game.width - 50),
+        this.placePackage(this.game.rnd.integerInRange(50, this.game.width - 50),
             this.game.height + 50);
 
     this.missileGroup.forEachAlive(function (m) {
@@ -387,7 +387,7 @@ Missile.prototype.constructor = Missile;
 
 Missile.prototype.update = function () { }
 
-GameStates.Game.prototype.launchMissile = function (x, y) {
+GameStates.Game.prototype.placePackage = function (x, y) {
  
     var missile = this.missileGroup.getFirstDead();
 
