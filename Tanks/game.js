@@ -147,14 +147,8 @@ GameStates.Game.prototype = {
             this.placePackage(this.game.world.randomX,
                 this.game.world.randomY);
         }
-        packagesGroup.forEachAlive(function (m) {
-        var distance = this.game.math.distance(m.x, m.y,
-            tank.x, tank.y);
-        if (distance < 5) {
-            m.kill();
-            tank.health = 50;
-        }
-    }, this);
+        this.game.physics.arcade.overlap(packagesGroup, tank, this.playerGetHealthPackage, null, this);
+
         enemiesAlive = 0;
 
         for (var i = 0; i < enemies.length; i++) {
@@ -233,6 +227,13 @@ GameStates.Game.prototype = {
 
             missile.rotation = this.game.physics.arcade.moveToPointer(missile, 1000, this.game.input.activePointer);
         }
+    },
+
+    playerGetHealthPackage: function (tank, package) {
+
+        package.kill();
+        playerHp = playerMaxHp;
+
     },
 
     bulletHitPlayer: function (tank, bullet) {
