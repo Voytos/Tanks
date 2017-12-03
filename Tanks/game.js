@@ -3,7 +3,7 @@
 var tank;
 var turret;
 
-var playerMaxHp = 20;
+var playerMaxHp = 50;
 var playerHp;
 var maxPackages = 2;
 
@@ -29,12 +29,12 @@ var bulletNextFire = 0;
 var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
-var missilesAmount;
-var maxMissilesAmount = 5;
+var missilesAmount = 0;
+var maxMissilesAmount = 10;
 
 var mines;
-var minesAmount;
-var maxMinesAmount = 5;
+var minesAmount = 0;
+var maxMinesAmount = 10;
 
 var tree;
 var wall;
@@ -92,13 +92,9 @@ GameStates.Game.prototype = {
 
 
         enemies = [];
-        healthPacks = [];
+
         obstacle = [];
 
-        for (var i; i < 10; i++)
-        {
-            healthPacks.push(new healthPack());
-        }
         for (var i = 0; i < 5; i++) {
             obstacle.push(new Three(i,this.game,tank))
         }
@@ -171,18 +167,21 @@ GameStates.Game.prototype = {
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
         if (packagesGroup.countLiving() < maxPackages) {
+ 
             this.placePackage(this.game.world.randomX,
                 this.game.world.randomY);
         }
         this.game.physics.arcade.overlap(packagesGroup, tank, this.playerGetHealthPackage, null, this);
 
         if (rocketPackagesGroup.countLiving() < maxPackages) {
+
             this.placeRocketPackage(this.game.world.randomX,
                 this.game.world.randomY);
         }
         this.game.physics.arcade.overlap(rocketPackagesGroup, tank, this.playerGetRocketPackage, null, this);
 
         if (minesPackagesGroup.countLiving() < maxPackages) {
+
             this.placeMinePackage(this.game.world.randomX,
                 this.game.world.randomY);
         }
@@ -283,7 +282,6 @@ GameStates.Game.prototype = {
 
         package.kill();
         playerHp = playerMaxHp;
-
     },
 
     playerGetRocketPackage: function (tank, rocketPackage) {
@@ -540,7 +538,7 @@ GameStates.Game.prototype.placePackage = function (x, y) {
 
     var package = packagesGroup.getFirstDead();
     if (package === null) {
-
+            
             package = new healthPackage(this.game);
             packagesGroup.add(package);
 
