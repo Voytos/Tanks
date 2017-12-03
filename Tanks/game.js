@@ -3,7 +3,7 @@
 var tank;
 var turret;
 
-var playerMaxHp = 20;
+var playerMaxHp = 50;
 var playerHp;
 var maxPackages = 2;
 
@@ -32,11 +32,11 @@ var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
 var missilesAmount;
-var maxMissilesAmount = 5;
+var maxMissilesAmount = 10;
 
 var mines;
 var minesAmount;
-var maxMinesAmount = 5;
+var maxMinesAmount = 10;
 
 var tree;
 var wall;
