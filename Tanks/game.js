@@ -11,8 +11,8 @@ var healthPack;
 
 var enemies;
 var enemyBullets;
-var enemiesTotal = 10;
-var enemiesAlive = 10;
+var enemiesTotal = 1;
+var enemiesAlive = 1;
 var explosions;
 
 var lvl = 1;
@@ -216,7 +216,6 @@ GameStates.Game.prototype = {
             this.game.physics.arcade.overlap(bullets, obstacle, this.bulletHitObstacle, null, this);
             this.game.physics.arcade.overlap(enemyBullets, obstacle, this.bulletHitObstacle, null, this);
         }
-
         if (enemiesAlive == 0) {
             this.levelUp(this);
         }
@@ -347,10 +346,11 @@ GameStates.Game.prototype = {
     },
 
     levelUp: function () {
+        debugger;
         enemiesTotal += 5;
         enemiesAlive = enemiesTotal;
         lvl++;
-        this.game.state.restart();
+        this.state.start('NextLvl');
     },
 
     missileHitEnemy: function (tank, missile) {
