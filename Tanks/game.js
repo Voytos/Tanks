@@ -67,6 +67,10 @@ GameStates.Game.prototype = {
         packagesGroup.enableBody = true;
         packagesGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
+        rocketPackagesGroup = this.game.add.group();
+        rocketPackagesGroup.enableBody = true;
+        rocketPackagesGroup.physicsBodyType = Phaser.Physics.ARCADE;
+
         turret = this.game.add.sprite(0, 0, 'turret');
         turret.anchor.setTo(0.18, 0.5);
 
@@ -166,6 +170,12 @@ GameStates.Game.prototype = {
         }
         this.game.physics.arcade.overlap(packagesGroup, tank, this.playerGetHealthPackage, null, this);
 
+        if (rocketPackagesGroup.countLiving() < maxPackages) {
+            this.placeRocketPackage(this.game.world.randomX,
+                this.game.world.randomY);
+        }
+        this.game.physics.arcade.overlap(rocketPackagesGroup, tank, this.playerGetRocketPackage, null, this);
+
         enemiesAlive = 0;
 
         for (var i = 0; i < enemies.length; i++) {
@@ -264,6 +274,13 @@ GameStates.Game.prototype = {
 
     },
 
+    playerGetRocketPackage: function (tank, rocketPackage) {
+
+        rocketPackage.kill();
+        missilesAmount = 5;
+
+    },
+
     bulletHitPlayer: function (tank, bullet) {
 
         bullet.kill();
@@ -324,17 +341,6 @@ GameStates.Game.prototype = {
     },
 
 };
-
-healthPack = function () {
-
-    var x = game.world.randomX;
-    var y = game.world.randomY;
-
-    var hp;
-    this.hp = game.add.sprite(x, y, 'turret');
-    this.body.immovable = true;
-    game.physics.enable(this.hp, Phaser.Physics.collide);
-}
 
 Three = function (index,game,player) {
     var x = game.world.randomX;
@@ -466,7 +472,7 @@ EnemyTank.prototype.update = function () {
 
 };
 
-var Package = function (game, x, y) {
+var healthPackage = function (game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'health_pack');
 
     this.anchor.setTo(0.5, 0.5);
@@ -476,18 +482,34 @@ var Package = function (game, x, y) {
     this.SPEED = 0;
 }
 
-Package.prototype = Object.create(Phaser.Sprite.prototype);
-Package.prototype.constructor = Package;
+var rocketPackage = function (game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'missiles_pack');
 
-Package.prototype.update = function () { }
+    this.anchor.setTo(0.5, 0.5);
+
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    this.SPEED = 0;
+}
+
+healthPackage.prototype = Object.create(Phaser.Sprite.prototype);
+healthPackage.prototype.constructor = healthPackage;
+
+healthPackage.prototype.update = function () { }
+
+rocketPackage.prototype = Object.create(Phaser.Sprite.prototype);
+rocketPackage.prototype.constructor = rocketPackage;
+
+rocketPackage.prototype.update = function () { }
 
 GameStates.Game.prototype.placePackage = function (x, y) {
 
     var package = packagesGroup.getFirstDead();
-
     if (package === null) {
-        package = new Package(this.game);
-        packagesGroup.add(package);
+
+            package = new healthPackage(this.game);
+            packagesGroup.add(package);
+
     }
 
     package.revive();
@@ -496,4 +518,23 @@ GameStates.Game.prototype.placePackage = function (x, y) {
     package.y = y;
 
     return package;
+};
+
+GameStates.Game.prototype.placeRocketPackage = function (x, y) {
+
+    var rocketPack = rocketPackagesGroup.getFirstDead();
+
+    if (rocketPack === null) {
+
+        rocketPack = new rocketPackage(this.game);
+        rocketPackagesGroup.add(rocketPack);
+
+    }
+
+    rocketPack.revive();
+
+    rocketPack.x = x;
+    rocketPack.y = y;
+
+    return rocketPack;
 };
