@@ -4,7 +4,8 @@ var land;
 var tank;
 var turret;
 
-var playerHp = 50;
+var playerMaxHp = 20;
+var playerHp;
 var maxPackages = 5000;
 
 var healthPack;
@@ -19,7 +20,7 @@ var startMenu;
 
 var currentSpeed = 0;
 var cursors;
-var spaceKey;
+var missileKey;
 
 var bullets;
 var bulletFireRate = 500;
@@ -37,6 +38,8 @@ GameStates.Game = function (game) {
 GameStates.Game.prototype = {
 
     create: function () {
+
+        playerHp = playerMaxHp;
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
 
@@ -95,10 +98,12 @@ GameStates.Game.prototype = {
         missiles.enableBody = true;
         missiles.physicsBodyType = Phaser.Physics.ARCADE;
         missiles.createMultiple(30, 'missile', 0, false);
+        //missiles.scale.setTo(0.5);
         missiles.setAll('anchor.x', 0.5);
         missiles.setAll('anchor.y', 0.5);
         missiles.setAll('outOfBoundsKill', true);
         missiles.setAll('checkWorldBounds', true);
+        //missiles.scale.setTo(0.5);
 
         explosions = this.game.add.group();
 
@@ -112,19 +117,14 @@ GameStates.Game.prototype = {
         tank.bringToTop();
         turret.bringToTop();
 
-        startMenu = this.add.text(this.game.width / 2, this.game.height / 2, "Click to start", { font: "80px monospace", fill: "#fff" });
-        startMenu.anchor.setTo(0.5, 0.5);
-        startMenu.fixedToCamera = true;
-        this.game.input.onDown.add(this.removeStartMenu, this);
-
         this.game.camera.follow(tank);
         this.game.camera.deadzone = new Phaser.Rectangle(400, 280, 200, 140);
         this.game.camera.focusOnXY(0, 0);
 
         cursors = this.game.input.keyboard.createCursorKeys();
 
-        spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
-        spaceKey.onDown.add(this.fireMissile, this);
+        missileKey = this.game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        missileKey.onDown.add(this.fireMissile, this);
     },
 
     update: function () {
@@ -185,15 +185,11 @@ GameStates.Game.prototype = {
             this.fireBullet(this);
         }
 
-   //     if (cursors.space.isDown) {
-   //         this.fireMissile(this);
-   //     }
-
     },
 
     render: function () {
         this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
-        this.game.debug.text('Player HP: ' + playerHp + ' / 50', 32, 64);
+        this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 32, 64);
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
     },
 
@@ -227,11 +223,6 @@ GameStates.Game.prototype = {
         }
     },
 
-    removeStartMenu: function () {
-        startMenu.destroy();
-        this.game.paused = false;
-    },
-
     bulletHitPlayer: function (tank, bullet) {
 
         bullet.kill();
@@ -239,14 +230,8 @@ GameStates.Game.prototype = {
             playerHp--;
         }
         if (playerHp == 0) {
-            this.restartGame(this);
+            this.gameOver(this);
         }
-
-    },
-
-    restartGame: function () {
-        playerHp = 30;
-        this.state.restart();
     },
 
     bulletHitEnemy: function (tank, bullet) {
@@ -275,6 +260,12 @@ GameStates.Game.prototype = {
             explosionAnimation.play('kaboom', 30, false, true);
         }
 
+    },
+
+    gameOver: function () {
+        this.game.world.setBounds(0, 0, 1000, 700);
+
+        this.state.start('GameOver');
     },
 
 };
