@@ -22,7 +22,7 @@ GameStates.Preloader.prototype = {
         //TODO
        // this.game.load.image('health_pack', '');
        // this.game.load.image('missile_pack', '');
-       // this.game.load.image('missile', '');
+        this.game.load.image('missile', 'assets/missile.png');
        // this.game.load.image('wall', '');
        // this.game.load.image('tree', '');
        // this.game.load.image('water', '');

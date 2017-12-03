@@ -5,7 +5,6 @@ var tank;
 var turret;
 
 var playerHp = 50;
-var missiles = 0;
 
 var healthPack;
 
@@ -19,10 +18,16 @@ var startMenu;
 
 var currentSpeed = 0;
 var cursors;
+var spaceKey;
 
 var bullets;
-var fireRate = 500;
-var nextFire = 0;
+var bulletFireRate = 500;
+var bulletNextFire = 0;
+
+var missiles;
+var missileFireRate = 0;
+var missileNextFire = 0;
+var missilesAmount = 5;
 
 GameStates.Game = function (game) {
 
@@ -85,6 +90,15 @@ GameStates.Game.prototype = {
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
 
+        missiles = this.game.add.group();
+        missiles.enableBody = true;
+        missiles.physicsBodyType = Phaser.Physics.ARCADE;
+        missiles.createMultiple(30, 'missile', 0, false);
+        missiles.setAll('anchor.x', 0.5);
+        missiles.setAll('anchor.y', 0.5);
+        missiles.setAll('outOfBoundsKill', true);
+        missiles.setAll('checkWorldBounds', true);
+
         explosions = this.game.add.group();
 
         for (var i = 0; i < 10; i++) {
@@ -107,6 +121,9 @@ GameStates.Game.prototype = {
         this.game.camera.focusOnXY(0, 0);
 
         cursors = this.game.input.keyboard.createCursorKeys();
+
+        spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
+        spaceKey.onDown.add(this.fireMissile, this);
     },
 
     update: function () {
@@ -131,6 +148,7 @@ GameStates.Game.prototype = {
                 enemiesAlive++;
                 this.game.physics.arcade.collide(tank, enemies[i].tank);
                 this.game.physics.arcade.overlap(bullets, enemies[i].tank, this.bulletHitEnemy, null, this);
+                this.game.physics.arcade.overlap(missiles, enemies[i].tank, this.missileHitEnemy, null, this);
                 enemies[i].update();
             }
         }
@@ -162,21 +180,25 @@ GameStates.Game.prototype = {
         turret.rotation = this.game.physics.arcade.angleToPointer(turret);
 
         if (this.game.input.activePointer.isDown) {
-            this.fire(this);
+            this.fireBullet(this);
         }
+
+   //     if (cursors.space.isDown) {
+   //         this.fireMissile(this);
+   //     }
 
     },
 
     render: function () {
         this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
         this.game.debug.text('Player HP: ' + playerHp + ' / 50', 32, 64);
-        this.game.debug.text('Missiles: ' + missiles, 32, 80);
+        this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
     },
 
-    fire: function () {
+    fireBullet: function () {
 
-        if (this.game.time.now > nextFire && bullets.countDead() > 0) {
-            nextFire = this.game.time.now + fireRate;
+        if (this.game.time.now > bulletNextFire && bullets.countDead() > 0) {
+            bulletNextFire = this.game.time.now + bulletFireRate;
 
             var bullet = bullets.getFirstExists(false);
 
@@ -185,6 +207,22 @@ GameStates.Game.prototype = {
             bullet.rotation = this.game.physics.arcade.moveToPointer(bullet, 1000, this.game.input.activePointer);
         }
 
+    },
+
+    fireMissile: function () {
+        
+        if (missilesAmount > 0 && this.game.time.now > missileNextFire && missiles.countDead() > 0) {
+
+            missilesAmount--;
+
+            missileNextFire = this.game.time.now + missileFireRate;
+
+            var missile = missiles.getFirstExists(false);
+
+            missile.reset(turret.x, turret.y);
+
+            missile.rotation = this.game.physics.arcade.moveToPointer(missile, 1000, this.game.input.activePointer);
+        }
     },
 
     removeStartMenu: function () {
@@ -213,7 +251,21 @@ GameStates.Game.prototype = {
 
         bullet.kill();
 
-        var destroyed = enemies[tank.name].damage();
+        var destroyed = enemies[tank.name].bulletDamage();
+
+        if (destroyed) {
+            var explosionAnimation = explosions.getFirstExists(false);
+            explosionAnimation.reset(tank.x, tank.y);
+            explosionAnimation.play('kaboom', 30, false, true);
+        }
+
+    },
+
+    missileHitEnemy: function (tank, missile) {
+
+        missile.kill();
+
+        var destroyed = enemies[tank.name].missileDamage();
 
         if (destroyed) {
             var explosionAnimation = explosions.getFirstExists(false);
@@ -244,8 +296,8 @@ EnemyTank = function (index, game, player, bullets) {
     this.health = 3;
     this.player = player;
     this.bullets = bullets;
-    this.fireRate = 1000;
-    this.nextFire = 0;
+    this.bulletFireRate = 1000;
+    this.bulletNextFire = 0;
     this.alive = true;
 
     this.tank = game.add.sprite(x, y, 'tank');
@@ -266,9 +318,26 @@ EnemyTank = function (index, game, player, bullets) {
 
 };
 
-EnemyTank.prototype.damage = function () {
+EnemyTank.prototype.bulletDamage = function () {
 
     this.health -= 1;
+
+    if (this.health <= 0) {
+        this.alive = false;
+
+        this.tank.kill();
+        this.turret.kill();
+
+        return true;
+    }
+
+    return false;
+
+}
+
+EnemyTank.prototype.missileDamage = function () {
+
+    this.health -= 3;
 
     if (this.health <= 0) {
         this.alive = false;
@@ -290,8 +359,8 @@ EnemyTank.prototype.update = function () {
     this.turret.rotation = this.game.physics.arcade.angleBetween(this.tank, this.player);
 
     if (this.game.physics.arcade.distanceBetween(this.tank, this.player) < 300) {
-        if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0) {
-            this.nextFire = this.game.time.now + this.fireRate;
+        if (this.game.time.now > this.bulletNextFire && this.bullets.countDead() > 0) {
+            this.bulletNextFire = this.game.time.now + this.bulletFireRate;
 
             var bullet = this.bullets.getFirstDead();
 
