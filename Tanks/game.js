@@ -345,7 +345,7 @@ GameStates.Game.prototype = {
     },
 
     levelUp: function () {
-        debugger;
+        //debugger;
         enemiesTotal += 5;
         enemiesAlive = enemiesTotal;
         lvl++;
