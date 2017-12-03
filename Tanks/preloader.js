@@ -18,11 +18,17 @@ GameStates.Preloader.prototype = {
         this.game.load.image('bullet', 'assets/bullet.png');
         this.game.load.image('earth', 'assets/floor.jpg');
         this.game.load.spritesheet('kaboom', 'assets/explosion.png', 64, 64, 23);
+        
+        this.game.load.image('missile', 'assets/missile.png');
+        this.game.load.image('missiles_pack', 'assets/missiles_pack.png');
+
+        this.game.load.image('mine', 'assets/mine.png');
+        this.game.load.image('mines_pack', 'assets/mines_pack.png');
+
+        this.game.load.image('health', 'assets/health.png');
+        this.game.load.image('health_pack', 'assets/health_pack.png');
 
         //TODO
-       // this.game.load.image('health_pack', '');
-       // this.game.load.image('missile_pack', '');
-        this.game.load.image('missile', 'assets/missile.png');
        // this.game.load.image('wall', '');
        // this.game.load.image('tree', '');
        // this.game.load.image('water', '');

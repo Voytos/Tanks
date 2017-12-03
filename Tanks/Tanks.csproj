@@ -28,7 +28,12 @@
     <Content Include="assets\bullet.png" />
     <Content Include="assets\explosion.png" />
     <Content Include="assets\floor.jpg" />
+    <Content Include="assets\health.png" />
+    <Content Include="assets\health_pack.png" />
+    <Content Include="assets\mine.png" />
+    <Content Include="assets\mines_pack.png" />
     <Content Include="assets\missile.png" />
+    <Content Include="assets\missiles_pack.png" />
     <Content Include="assets\preloader-bar.png" />
     <Content Include="assets\tank.png" />
     <Content Include="assets\turret.png" />
