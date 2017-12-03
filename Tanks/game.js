@@ -44,7 +44,7 @@ GameStates.Game.prototype = {
         tank.body.collideWorldBounds = true;
 
         turret = this.game.add.sprite(0, 0, 'turret');
-        turret.anchor.setTo(0.2, 0.5);
+        turret.anchor.setTo(0.18, 0.5);
 
         enemyBullets = this.game.add.group();
         enemyBullets.enableBody = true;
@@ -80,6 +80,7 @@ GameStates.Game.prototype = {
         for (var i = 0; i < 10; i++) {
             var explosionAnimation = explosions.create(0, 0, 'kaboom', [0], false);
             explosionAnimation.anchor.setTo(0.5, 0.5);
+            explosionAnimation.scale.setTo(3);
             explosionAnimation.animations.add('kaboom');
         }
 
