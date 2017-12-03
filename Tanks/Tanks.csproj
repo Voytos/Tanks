@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.2</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -24,8 +24,12 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="app.js" />
-    <Content Include="assets\phaser2.png" />
+    <Content Include="assets\bullet.png" />
+    <Content Include="assets\explosion.png" />
+    <Content Include="assets\floor.jpg" />
     <Content Include="assets\preloader-bar.png" />
+    <Content Include="assets\tank.png" />
+    <Content Include="assets\turret.png" />
     <Content Include="boot.js" />
     <Content Include="game.js" />
     <Content Include="index.html" />
@@ -44,8 +48,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="assets\spritesheets\" />
-    <Folder Include="assets\tilemaps\" />
     <Folder Include="lib\" />
   </ItemGroup>
   <PropertyGroup>

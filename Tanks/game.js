@@ -29,13 +29,6 @@ GameStates.Game = function (game) {
 GameStates.Game.prototype = {
 
     create: function () {
-        /*
-            //below code creates a simple tween animation. You will want to delete this when adding your code
-            var logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
-            logo.anchor.setTo(0.5, 0.5);
-            logo.scale.setTo(0.2, 0.2);
-            this.add.tween(logo.scale).to({ x: 1, y: 1 }, 2000, Phaser.Easing.Bounce.Out, true);
-        */
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
 
@@ -96,7 +89,6 @@ GameStates.Game.prototype = {
         startMenu = this.add.text(this.game.width / 2, this.game.height / 2, "Click to start", { font: "80px monospace", fill: "#fff" });
         startMenu.anchor.setTo(0.5, 0.5);
         startMenu.fixedToCamera = true;
-        //this.game.paused = true;
         this.game.input.onDown.add(this.removeStartMenu, this);
 
         this.game.camera.follow(tank);
@@ -154,7 +146,6 @@ GameStates.Game.prototype = {
     },
 
     render: function () {
-        // this.game.debug.text('Active Bullets: ' + bullets.countLiving() + ' / ' + bullets.length, 32, 32);
         this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
         this.game.debug.text('Player HP: ' + playerHp + ' / 50', 32, 64);
         this.game.debug.text('Missiles: ' + missiles, 32, 80);
@@ -175,11 +166,8 @@ GameStates.Game.prototype = {
     },
 
     removeStartMenu: function () {
-
-        this.game.input.onDown.remove(removeStartMenu, this);
-        startMenu.kill();
+        startMenu.destroy();
         this.game.paused = false;
-
     },
 
     bulletHitPlayer: function (tank, bullet) {
@@ -189,16 +177,14 @@ GameStates.Game.prototype = {
             playerHp--;
         }
         if (playerHp == 0) {
-            playerHp = 30;
-            this.state.restart();
-            //this.restartGame(this);
+            this.restartGame(this);
         }
 
     },
 
     restartGame: function () {
         playerHp = 30;
-        //this.state.restart();
+        this.state.restart();
     },
 
     bulletHitEnemy: function (tank, bullet) {
