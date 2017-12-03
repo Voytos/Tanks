@@ -1,5 +1,4 @@
-﻿
-var land;
+﻿var land;
 
 var tank;
 var turret;
@@ -29,6 +28,9 @@ var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
 var missilesAmount = 5;
+
+var tree;
+var wall;
 
 GameStates.Game = function (game) {
 
@@ -69,12 +71,20 @@ GameStates.Game.prototype = {
 
         enemies = [];
         healthPacks = [];
+        obstacle = [];
 
         for (var i; i < 10; i++)
         {
             healthPacks.push(new healthPack());
         }
+        for (var i = 0; i < 5; i++) {
+            obstacle.push(new Three(i,this.game,tank))
+        }
+        for (var i = 0; i < 5; i++) {
+            obstacle.push(new Wall(i,this.game,tank))
+        }
 
+        debugger;
         enemiesTotal = 10;
         enemiesAlive = 10;
 
@@ -289,6 +299,35 @@ healthPack = function () {
     this.body.immovable = true;
     game.physics.enable(this.hp, Phaser.Physics.collide);
 }
+
+Three = function (index,game,player) {
+    var x = game.world.randomX;
+    var y = game.world.randomY;
+    debugger;
+    this.game = game;
+    this.player = player;
+    this.tree = game.add.sprite(x, y, 'tree');
+    this.tree.anchor.set(0.5);
+    this.tree.name = index.toString();
+    game.physics.enable(this.tree, Phaser.Physics.ARCADE);
+    //this.body.immovable = true;
+    
+}
+
+Wall = function (index, game, player) {
+    var x = game.world.randomX;
+    var y = game.world.randomY;
+    debugger;
+    this.game = game;
+    this.player = player;
+    this.wall = game.add.sprite(x, y, 'stone');
+    this.wall.anchor.set(0.5);
+    this.wall.name = index.toString();
+    game.physics.enable(this.wall, Phaser.Physics.ARCADE);
+    //this.body.immovable = true;
+
+}
+
 EnemyTank = function (index, game, player, bullets) {
 
     var x = game.world.randomX;

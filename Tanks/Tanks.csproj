@@ -36,6 +36,7 @@
     <Content Include="assets\missiles_pack.png" />
     <Content Include="assets\preloader-bar.png" />
     <Content Include="assets\tank.png" />
+    <Content Include="assets\tree.png" />
     <Content Include="assets\turret.png" />
     <Content Include="boot.js" />
     <Content Include="game.js" />

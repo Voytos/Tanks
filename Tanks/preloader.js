@@ -17,6 +17,7 @@ GameStates.Preloader.prototype = {
         this.game.load.image('turret', 'assets/turret.png');
         this.game.load.image('bullet', 'assets/bullet.png');
         this.game.load.image('earth', 'assets/floor.jpg');
+        
         this.game.load.spritesheet('kaboom', 'assets/explosion.png', 64, 64, 23);
         
         this.game.load.image('missile', 'assets/missile.png');
@@ -28,6 +29,8 @@ GameStates.Preloader.prototype = {
         this.game.load.image('health', 'assets/health.png');
         this.game.load.image('health_pack', 'assets/health_pack.png');
 
+        this.game.load.image('tree', 'assets/tree.png');
+        this.game.load.image('stone', 'assets/stone.png');
         //TODO
        // this.game.load.image('wall', '');
        // this.game.load.image('tree', '');
