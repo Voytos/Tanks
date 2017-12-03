@@ -5,6 +5,7 @@ var tank;
 var turret;
 
 var playerHp = 50;
+var maxPackages = 5000;
 
 var healthPack;
 
@@ -50,7 +51,7 @@ GameStates.Game.prototype = {
         tank.body.maxVelocity.setTo(400, 400);
         tank.body.collideWorldBounds = true;
 
-        this.missileGroup = this.game.add.group();
+        this.packagesGroup = this.game.add.group();
 
         turret = this.game.add.sprite(0, 0, 'turret');
         turret.anchor.setTo(0.18, 0.5);
@@ -130,10 +131,11 @@ GameStates.Game.prototype = {
 
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
-        this.placePackage(this.game.rnd.integerInRange(50, this.game.width - 50),
-            this.game.height + 50);
-
-    this.missileGroup.forEachAlive(function (m) {
+        //if (this.packagesGroup.countLiving() < this.maxPackages) {
+            this.placePackage(this.game.rnd.integerInRange(50, this.game.width - 50),
+                this.game.height + 50);
+       // }
+        this.packagesGroup.forEachAlive(function (m) {
         var distance = this.game.math.distance(m.x, m.y,
             tank.x, tank.y);
         if (distance < 5) {
@@ -372,7 +374,7 @@ EnemyTank.prototype.update = function () {
 
 };
 
-var Missile = function (game, x, y) {
+var Package = function (game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'turret');
 
     this.anchor.setTo(0.5, 0.5);
@@ -382,24 +384,24 @@ var Missile = function (game, x, y) {
     this.SPEED = 0;
 }
 
-Missile.prototype = Object.create(Phaser.Sprite.prototype);
-Missile.prototype.constructor = Missile;
+Package.prototype = Object.create(Phaser.Sprite.prototype);
+Package.prototype.constructor = Package;
 
-Missile.prototype.update = function () { }
+Package.prototype.update = function () { }
 
 GameStates.Game.prototype.placePackage = function (x, y) {
- 
-    var missile = this.missileGroup.getFirstDead();
 
-    if (missile === null) {
-        missile = new Missile(this.game);
-        this.missileGroup.add(missile);
+    var package = this.packagesGroup.getFirstDead();
+
+    if (package === null) {
+        package = new Package(this.game);
+        this.packagesGroup.add(package);
     }
 
-    missile.revive();
+    package.revive();
 
-    missile.x = x;
-    missile.y = y;
+    package.x = x;
+    package.y = y;
 
-    return missile;
+    return package;
 };
