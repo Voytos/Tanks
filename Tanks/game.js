@@ -7,6 +7,8 @@ var turret;
 var playerHp = 50;
 var missiles = 0;
 
+var healthPack;
+
 var enemies;
 var enemyBullets;
 var enemiesTotal = 0;
@@ -43,6 +45,8 @@ GameStates.Game.prototype = {
         tank.body.maxVelocity.setTo(400, 400);
         tank.body.collideWorldBounds = true;
 
+        this.missileGroup = this.game.add.group();
+
         turret = this.game.add.sprite(0, 0, 'turret');
         turret.anchor.setTo(0.18, 0.5);
 
@@ -58,6 +62,12 @@ GameStates.Game.prototype = {
 
 
         enemies = [];
+        healthPacks = [];
+
+        for (var i; i < 10; i++)
+        {
+            healthPacks.push(new healthPack());
+        }
 
         enemiesTotal = 10;
         enemiesAlive = 10;
@@ -103,6 +113,17 @@ GameStates.Game.prototype = {
 
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
+        this.launchMissile(this.game.rnd.integerInRange(50, this.game.width - 50),
+            this.game.height + 50);
+
+    this.missileGroup.forEachAlive(function (m) {
+        var distance = this.game.math.distance(m.x, m.y,
+            tank.x, tank.y);
+        if (distance < 5) {
+            m.kill();
+            tank.health = 50;
+        }
+    }, this);
         enemiesAlive = 0;
 
         for (var i = 0; i < enemies.length; i++) {
@@ -204,6 +225,16 @@ GameStates.Game.prototype = {
 
 };
 
+healthPack = function () {
+
+    var x = game.world.randomX;
+    var y = game.world.randomY;
+
+    var hp;
+    this.hp = game.add.sprite(x, y, 'turret');
+    this.body.immovable = true;
+    game.physics.enable(this.hp, Phaser.Physics.collide);
+}
 EnemyTank = function (index, game, player, bullets) {
 
     var x = game.world.randomX;
@@ -272,6 +303,34 @@ EnemyTank.prototype.update = function () {
 
 };
 
+var Missile = function (game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'turret');
 
+    this.anchor.setTo(0.5, 0.5);
 
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
+    this.SPEED = 0;
+}
+
+Missile.prototype = Object.create(Phaser.Sprite.prototype);
+Missile.prototype.constructor = Missile;
+
+Missile.prototype.update = function () { }
+
+GameStates.Game.prototype.launchMissile = function (x, y) {
+ 
+    var missile = this.missileGroup.getFirstDead();
+
+    if (missile === null) {
+        missile = new Missile(this.game);
+        this.missileGroup.add(missile);
+    }
+
+    missile.revive();
+
+    missile.x = x;
+    missile.y = y;
+
+    return missile;
+};
