@@ -36,7 +36,7 @@
     <Content Include="game.js" />
     <Content Include="index.html" />
     <Content Include="mainmenu.js" />
-    <Content Include="phaser.js" />
+    <Content Include="lib\phaser.js" />
     <Content Include="preloader.js" />
     <Content Include="web.config" />
   </ItemGroup>
@@ -50,9 +50,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="lib\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
