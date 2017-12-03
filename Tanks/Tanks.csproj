@@ -44,6 +44,7 @@
     <Content Include="game.js" />
     <Content Include="nextlvl.js" />
     <Content Include="gameover.js" />
+    <Content Include="HealthBar.standalone.js" />
     <Content Include="index.html" />
     <Content Include="mainmenu.js" />
     <Content Include="lib\phaser.js" />

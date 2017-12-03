@@ -98,9 +98,8 @@ GameStates.Game.prototype = {
         enemies = [];
         healthPacks = [];
 
-       
-        for (var i; i < 10; i++)
-        {
+
+        for (var i; i < 10; i++) {
             healthPacks.push(new healthPack());
         }
         obstacle = this.game.add.group();
@@ -109,7 +108,7 @@ GameStates.Game.prototype = {
             var x = this.game.world.randomX;
             var y = this.game.world.randomY;
             var tree = obstacle.create(x, y, 'tree');
-            tree.scale.setTo(0.7,0.7);
+            tree.scale.setTo(0.7, 0.7);
             tree.body.immovable = true;
         }
         for (var i = 0; i < 5; i++) {
@@ -275,7 +274,7 @@ GameStates.Game.prototype = {
     },
 
     fireMissile: function () {
-        
+
         if (missilesAmount > 0 && this.game.time.now > missileNextFire && missiles.countDead() > 0) {
 
             missilesAmount--;
@@ -562,8 +561,8 @@ GameStates.Game.prototype.placePackage = function (x, y) {
     var package = packagesGroup.getFirstDead();
     if (package === null) {
 
-            package = new healthPackage(this.game);
-            packagesGroup.add(package);
+        package = new healthPackage(this.game);
+        packagesGroup.add(package);
 
     }
 
