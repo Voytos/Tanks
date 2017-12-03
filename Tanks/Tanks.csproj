@@ -26,6 +26,7 @@
     <Content Include="app.css" />
     <Content Include="app.js" />
     <Content Include="assets\bullet.png" />
+    <Content Include="assets\button.png" />
     <Content Include="assets\explosion.png" />
     <Content Include="assets\floor.jpg" />
     <Content Include="assets\health.png" />
@@ -40,6 +41,7 @@
     <Content Include="assets\turret.png" />
     <Content Include="boot.js" />
     <Content Include="game.js" />
+    <Content Include="gameover.js" />
     <Content Include="index.html" />
     <Content Include="mainmenu.js" />
     <Content Include="lib\phaser.js" />

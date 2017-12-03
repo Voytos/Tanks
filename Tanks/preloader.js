@@ -29,6 +29,8 @@ GameStates.Preloader.prototype = {
         this.game.load.image('health', 'assets/health.png');
         this.game.load.image('health_pack', 'assets/health_pack.png');
 
+        this.game.load.image('button', 'assets/button.png');
+
         this.game.load.image('tree', 'assets/tree.png');
         this.game.load.image('stone', 'assets/stone.png');
         //TODO
