@@ -36,6 +36,7 @@
     <Content Include="assets\missile.png" />
     <Content Include="assets\missiles_pack.png" />
     <Content Include="assets\preloader-bar.png" />
+    <Content Include="assets\stone.png" />
     <Content Include="assets\tank.png" />
     <Content Include="assets\tree.png" />
     <Content Include="assets\turret.png" />
