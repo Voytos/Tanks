@@ -5,7 +5,7 @@ var turret;
 
 var playerMaxHp = 20;
 var playerHp;
-var maxPackages = 5000;
+var maxPackages = 2;
 
 var healthPack;
 
@@ -56,7 +56,9 @@ GameStates.Game.prototype = {
         tank.body.maxVelocity.setTo(400, 400);
         tank.body.collideWorldBounds = true;
 
-        this.packagesGroup = this.game.add.group();
+        packagesGroup = this.game.add.group();
+        packagesGroup.enableBody = true;
+        packagesGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
         turret = this.game.add.sprite(0, 0, 'turret');
         turret.anchor.setTo(0.18, 0.5);
@@ -141,11 +143,11 @@ GameStates.Game.prototype = {
 
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
-        //if (this.packagesGroup.countLiving() < this.maxPackages) {
-            this.placePackage(this.game.rnd.integerInRange(50, this.game.width - 50),
-                this.game.height + 50);
-       // }
-        this.packagesGroup.forEachAlive(function (m) {
+        if (packagesGroup.countLiving() < maxPackages) {
+            this.placePackage(this.game.world.randomX,
+                this.game.world.randomY);
+        }
+        packagesGroup.forEachAlive(function (m) {
         var distance = this.game.math.distance(m.x, m.y,
             tank.x, tank.y);
         if (distance < 5) {
@@ -405,7 +407,7 @@ EnemyTank.prototype.update = function () {
 };
 
 var Package = function (game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'turret');
+    Phaser.Sprite.call(this, game, x, y, 'health_pack');
 
     this.anchor.setTo(0.5, 0.5);
 
@@ -421,11 +423,11 @@ Package.prototype.update = function () { }
 
 GameStates.Game.prototype.placePackage = function (x, y) {
 
-    var package = this.packagesGroup.getFirstDead();
+    var package = packagesGroup.getFirstDead();
 
     if (package === null) {
         package = new Package(this.game);
-        this.packagesGroup.add(package);
+        packagesGroup.add(package);
     }
 
     package.revive();
