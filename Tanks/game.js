@@ -349,6 +349,7 @@ GameStates.Game.prototype = {
         enemiesTotal += 5;
         enemiesAlive = enemiesTotal;
         lvl++;
+        this.game.world.setBounds(0, 0, 1000, 700);
         this.state.start('NextLvl');
     },
 
