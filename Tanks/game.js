@@ -21,6 +21,7 @@ var startMenu;
 var currentSpeed = 0;
 var cursors;
 var missileKey;
+var mineKey;
 
 var bullets;
 var bulletFireRate = 500;
@@ -29,7 +30,10 @@ var bulletNextFire = 0;
 var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
-var missilesAmount = 5;
+var missilesAmount;
+
+var mines;
+var minesAmount;
 
 GameStates.Game = function (game) {
 
@@ -40,6 +44,8 @@ GameStates.Game.prototype = {
     create: function () {
 
         playerHp = playerMaxHp;
+        missilesAmount = 50;
+        minesAmount = 50;
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
 
@@ -103,7 +109,14 @@ GameStates.Game.prototype = {
         missiles.setAll('anchor.y', 0.5);
         missiles.setAll('outOfBoundsKill', true);
         missiles.setAll('checkWorldBounds', true);
-        //missiles.scale.setTo(0.5);
+
+        mines = this.game.add.group();
+        mines.enableBody = true;
+        mines.physicsBodyType = Phaser.Physics.ARCADE;
+        mines.createMultiple(30, 'mine', 0, false);
+        mines.setAll('anchor.x', 0.5);
+        mines.setAll('anchor.y', 0.5);
+
 
         explosions = this.game.add.group();
 
@@ -125,6 +138,9 @@ GameStates.Game.prototype = {
 
         missileKey = this.game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         missileKey.onDown.add(this.fireMissile, this);
+
+        mineKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+        mineKey.onDown.add(this.placeMine, this);
     },
 
     update: function () {
@@ -151,6 +167,7 @@ GameStates.Game.prototype = {
                 this.game.physics.arcade.collide(tank, enemies[i].tank);
                 this.game.physics.arcade.overlap(bullets, enemies[i].tank, this.bulletHitEnemy, null, this);
                 this.game.physics.arcade.overlap(missiles, enemies[i].tank, this.missileHitEnemy, null, this);
+                this.game.physics.arcade.overlap(mines, enemies[i].tank, this.mineHitEnemy, null, this);
                 enemies[i].update();
             }
         }
@@ -191,6 +208,7 @@ GameStates.Game.prototype = {
         this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
         this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 32, 64);
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
+        this.game.debug.text('Mines: ' + minesAmount, 32, 96);
     },
 
     fireBullet: function () {
@@ -223,6 +241,21 @@ GameStates.Game.prototype = {
         }
     },
 
+    placeMine: function () {
+
+        if (minesAmount > 0) {
+
+            minesAmount--;
+
+            var mine = mines.getFirstExists(false);
+
+            mine.reset(turret.x, turret.y);
+            //
+            
+        }
+
+    },
+
     bulletHitPlayer: function (tank, bullet) {
 
         bullet.kill();
@@ -253,6 +286,20 @@ GameStates.Game.prototype = {
         missile.kill();
 
         var destroyed = enemies[tank.name].missileDamage();
+
+        if (destroyed) {
+            var explosionAnimation = explosions.getFirstExists(false);
+            explosionAnimation.reset(tank.x, tank.y);
+            explosionAnimation.play('kaboom', 30, false, true);
+        }
+
+    },
+
+    mineHitEnemy: function (tank, mine) {
+
+        mine.kill();
+
+        var destroyed = enemies[tank.name].mineDamage();
 
         if (destroyed) {
             var explosionAnimation = explosions.getFirstExists(false);
@@ -331,6 +378,23 @@ EnemyTank.prototype.bulletDamage = function () {
 EnemyTank.prototype.missileDamage = function () {
 
     this.health -= 3;
+
+    if (this.health <= 0) {
+        this.alive = false;
+
+        this.tank.kill();
+        this.turret.kill();
+
+        return true;
+    }
+
+    return false;
+
+}
+
+EnemyTank.prototype.mineDamage = function () {
+
+    this.health -= 5;
 
     if (this.health <= 0) {
         this.alive = false;
