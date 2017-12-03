@@ -54,7 +54,7 @@ GameStates.Game.prototype = {
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
 
-
+        
 
         land = this.game.add.tileSprite(0, 0, 1000, 700, 'earth');
         land.fixedToCamera = true;
@@ -175,12 +175,17 @@ GameStates.Game.prototype = {
 
         mineKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         mineKey.onDown.add(this.placeMine, this);
+
+        var barConfig = { width: 150, height: 20, x: 900, y: 20, bar: { color: '#00FF00' }, bg: { color: '#009900' } };
+        this.playerHealthBar = new HealthBar(this.game, barConfig);
+        this.playerHealthBar.setFixedToCamera(true);
+        //this.playerHealthBar.setPercent(50);
     },
 
     update: function () {
 
         
-
+        this.playerHealthBar.setPercent(playerHp/playerMaxHp*100);
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
         if (packagesGroup.countLiving() < maxPackages) {
