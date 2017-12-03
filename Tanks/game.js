@@ -11,9 +11,11 @@ var healthPack;
 
 var enemies;
 var enemyBullets;
-var enemiesTotal = 0;
-var enemiesAlive = 0;
+var enemiesTotal = 10;
+var enemiesAlive = 10;
 var explosions;
+
+var lvl = 1;
 
 var startMenu;
 
@@ -117,9 +119,8 @@ GameStates.Game.prototype = {
             stone.scale.setTo(0.2, 0.2);
             stone.body.immovable = true;
         }
-        //obstacle.physicsBodyType = Phaser.Physics.P2JS;
-        enemiesTotal = 10;
-        enemiesAlive = 10;
+        //enemiesTotal = 1;
+        //enemiesAlive = 1;
 
         for (var i = 0; i < enemiesTotal; i++) {
             enemies.push(new EnemyTank(i, this.game, tank, enemyBullets));
@@ -178,9 +179,6 @@ GameStates.Game.prototype = {
     },
 
     update: function () {
-
-        
-
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
         if (packagesGroup.countLiving() < maxPackages) {
@@ -217,6 +215,10 @@ GameStates.Game.prototype = {
             this.game.physics.arcade.overlap(missiles, obstacle, this.missileHitObstacle, null, this);
             this.game.physics.arcade.overlap(bullets, obstacle, this.bulletHitObstacle, null, this);
             this.game.physics.arcade.overlap(enemyBullets, obstacle, this.bulletHitObstacle, null, this);
+        }
+
+        if (enemiesAlive == 0) {
+            this.levelUp(this);
         }
 
         if (cursors.left.isDown) {
@@ -256,6 +258,7 @@ GameStates.Game.prototype = {
         this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 32, 64);
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
         this.game.debug.text('Mines: ' + minesAmount, 32, 96);
+        this.game.debug.text('Lvl: ' + lvl, 32, 112);
     },
 
     fireBullet: function () {
@@ -343,6 +346,13 @@ GameStates.Game.prototype = {
 
     },
 
+    levelUp: function () {
+        enemiesTotal += 5;
+        enemiesAlive = enemiesTotal;
+        lvl++;
+        this.game.state.restart();
+    },
+
     missileHitEnemy: function (tank, missile) {
 
         missile.kill();
@@ -381,7 +391,9 @@ GameStates.Game.prototype = {
 
     gameOver: function () {
         this.game.world.setBounds(0, 0, 1000, 700);
-
+        enemiesTotal = 10;
+        enemiesAlive = enemiesTotal;
+        lvl = 1;
         this.state.start('GameOver');
     },
 
