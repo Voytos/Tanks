@@ -49,8 +49,9 @@ GameStates.Game.prototype = {
         missilesAmount = 50;
         minesAmount = 50;
 
-
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
+
+
 
         land = this.game.add.tileSprite(0, 0, 1000, 700, 'earth');
         land.fixedToCamera = true;
