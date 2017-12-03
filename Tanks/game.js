@@ -20,6 +20,7 @@ var startMenu;
 var currentSpeed = 0;
 var cursors;
 var missileKey;
+var mineKey;
 
 var bullets;
 var bulletFireRate = 500;
@@ -28,7 +29,10 @@ var bulletNextFire = 0;
 var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
-var missilesAmount = 5;
+var missilesAmount;
+
+var mines;
+var minesAmount;
 
 var tree;
 var wall;
@@ -42,6 +46,9 @@ GameStates.Game.prototype = {
     create: function () {
 
         playerHp = playerMaxHp;
+        missilesAmount = 50;
+        minesAmount = 50;
+
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
 
@@ -93,7 +100,7 @@ GameStates.Game.prototype = {
             obstacle.push(new Wall(i,this.game,tank))
         }
 
-        debugger;
+        //debugger;
         enemiesTotal = 10;
         enemiesAlive = 10;
 
@@ -121,6 +128,13 @@ GameStates.Game.prototype = {
         missiles.setAll('checkWorldBounds', true);
         //missiles.scale.setTo(0.5);
 
+        mines = this.game.add.group();
+        mines.enableBody = true;
+        mines.physicsBodyType = Phaser.Physics.ARCADE;
+        mines.createMultiple(30, 'mine', 0, false);
+        mines.setAll('anchor.x', 0.5);
+        mines.setAll('anchor.y', 0.5);
+
         explosions = this.game.add.group();
 
         for (var i = 0; i < 10; i++) {
@@ -141,6 +155,9 @@ GameStates.Game.prototype = {
 
         missileKey = this.game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         missileKey.onDown.add(this.fireMissile, this);
+
+        mineKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+        mineKey.onDown.add(this.placeMine, this);
     },
 
     update: function () {
@@ -167,6 +184,7 @@ GameStates.Game.prototype = {
                 this.game.physics.arcade.collide(tank, enemies[i].tank);
                 this.game.physics.arcade.overlap(bullets, enemies[i].tank, this.bulletHitEnemy, null, this);
                 this.game.physics.arcade.overlap(missiles, enemies[i].tank, this.missileHitEnemy, null, this);
+                this.game.physics.arcade.overlap(mines, enemies[i].tank, this.mineHitEnemy, null, this);
                 enemies[i].update();
             }
         }
@@ -207,6 +225,7 @@ GameStates.Game.prototype = {
         this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
         this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 32, 64);
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
+        this.game.debug.text('Mines: ' + minesAmount, 32, 96);
     },
 
     fireBullet: function () {
@@ -236,6 +255,15 @@ GameStates.Game.prototype = {
             missile.reset(turret.x, turret.y);
 
             missile.rotation = this.game.physics.arcade.moveToPointer(missile, 1000, this.game.input.activePointer);
+        }
+    },
+
+    placeMine: function () {
+
+        if (minesAmount > 0) {
+            minesAmount--;
+            var mine = mines.getFirstExists(false);
+            mine.reset(turret.x, turret.y);
         }
     },
 
@@ -292,6 +320,20 @@ GameStates.Game.prototype = {
 
     },
 
+    mineHitEnemy: function (tank, mine) {
+
+        mine.kill();
+
+        var destroyed = enemies[tank.name].mineDamage();
+
+        if (destroyed) {
+            var explosionAnimation = explosions.getFirstExists(false);
+            explosionAnimation.reset(tank.x, tank.y);
+            explosionAnimation.play('kaboom', 30, false, true);
+        }
+
+    },
+
     gameOver: function () {
         this.game.world.setBounds(0, 0, 1000, 700);
 
@@ -303,7 +345,7 @@ GameStates.Game.prototype = {
 Three = function (index,game,player) {
     var x = game.world.randomX;
     var y = game.world.randomY;
-    debugger;
+    //debugger;
     this.game = game;
     this.player = player;
     this.tree = game.add.sprite(x, y, 'tree');
@@ -317,7 +359,7 @@ Three = function (index,game,player) {
 Wall = function (index, game, player) {
     var x = game.world.randomX;
     var y = game.world.randomY;
-    debugger;
+    //debugger;
     this.game = game;
     this.player = player;
     this.wall = game.add.sprite(x, y, 'stone');
@@ -379,6 +421,23 @@ EnemyTank.prototype.bulletDamage = function () {
 EnemyTank.prototype.missileDamage = function () {
 
     this.health -= 3;
+
+    if (this.health <= 0) {
+        this.alive = false;
+
+        this.tank.kill();
+        this.turret.kill();
+
+        return true;
+    }
+
+    return false;
+
+}
+
+EnemyTank.prototype.mineDamage = function () {
+
+    this.health -= 5;
 
     if (this.health <= 0) {
         this.alive = false;
