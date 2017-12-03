@@ -38,6 +38,7 @@ var maxMinesAmount = 5;
 
 var tree;
 var wall;
+var obstacle;
 
 GameStates.Game = function (game) {
 
@@ -93,20 +94,29 @@ GameStates.Game.prototype = {
 
         enemies = [];
         healthPacks = [];
-        obstacle = [];
 
+       
         for (var i; i < 10; i++)
         {
             healthPacks.push(new healthPack());
         }
-        for (var i = 0; i < 5; i++) {
-            obstacle.push(new Three(i,this.game,tank))
+        obstacle = this.game.add.group();
+        obstacle.enableBody = true;
+        for (var j = 0; j < 5; j++) {
+            var x = this.game.world.randomX;
+            var y = this.game.world.randomY;
+            var tree = obstacle.create(x, y, 'tree');
+            tree.scale.setTo(0.7,0.7);
+            tree.body.immovable = true;
         }
         for (var i = 0; i < 5; i++) {
-            obstacle.push(new Wall(i,this.game,tank))
+            var x = this.game.world.randomX;
+            var y = this.game.world.randomY;
+            var stone = obstacle.create(x, y, 'stone');
+            stone.scale.setTo(0.2, 0.2);
+            stone.body.immovable = true;
         }
-
-        //debugger;
+        //obstacle.physicsBodyType = Phaser.Physics.P2JS;
         enemiesTotal = 10;
         enemiesAlive = 10;
 
@@ -168,6 +178,8 @@ GameStates.Game.prototype = {
 
     update: function () {
 
+        
+
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
         if (packagesGroup.countLiving() < maxPackages) {
@@ -197,8 +209,13 @@ GameStates.Game.prototype = {
                 this.game.physics.arcade.overlap(bullets, enemies[i].tank, this.bulletHitEnemy, null, this);
                 this.game.physics.arcade.overlap(missiles, enemies[i].tank, this.missileHitEnemy, null, this);
                 this.game.physics.arcade.overlap(mines, enemies[i].tank, this.mineHitEnemy, null, this);
+                this.game.physics.arcade.collide(tank, obstacle);
+                this.game.physics.arcade.collide(enemies[i].tank, obstacle);
                 enemies[i].update();
             }
+            this.game.physics.arcade.overlap(missiles, obstacle, this.missileHitObstacle, null, this);
+            this.game.physics.arcade.overlap(bullets, obstacle, this.bulletHitObstacle, null, this);
+            this.game.physics.arcade.overlap(enemyBullets, obstacle, this.bulletHitObstacle, null, this);
         }
 
         if (cursors.left.isDown) {
@@ -339,6 +356,14 @@ GameStates.Game.prototype = {
 
     },
 
+    bulletHitObstacle: function (bullet) {
+        bullet.kill();
+    },
+
+    missileHitObstacle: function (missile) {
+        missile.kill();
+    },
+
     mineHitEnemy: function (tank, mine) {
 
         mine.kill();
@@ -361,32 +386,15 @@ GameStates.Game.prototype = {
 
 };
 
-Three = function (index,game,player) {
+healthPack = function () {
+
     var x = game.world.randomX;
     var y = game.world.randomY;
-    //debugger;
-    this.game = game;
-    this.player = player;
-    this.tree = game.add.sprite(x, y, 'tree');
-    this.tree.anchor.set(0.5);
-    this.tree.name = index.toString();
-    game.physics.enable(this.tree, Phaser.Physics.ARCADE);
-    //this.body.immovable = true;
-    
-}
 
-Wall = function (index, game, player) {
-    var x = game.world.randomX;
-    var y = game.world.randomY;
-    //debugger;
-    this.game = game;
-    this.player = player;
-    this.wall = game.add.sprite(x, y, 'stone');
-    this.wall.anchor.set(0.5);
-    this.wall.name = index.toString();
-    game.physics.enable(this.wall, Phaser.Physics.ARCADE);
-    //this.body.immovable = true;
-
+    var hp;
+    this.hp = game.add.sprite(x, y, 'turret');
+    this.body.immovable = true;
+    game.physics.enable(this.hp, Phaser.Physics.collide);
 }
 
 EnemyTank = function (index, game, player, bullets) {
