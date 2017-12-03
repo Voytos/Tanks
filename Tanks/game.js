@@ -30,9 +30,11 @@ var missiles;
 var missileFireRate = 0;
 var missileNextFire = 0;
 var missilesAmount;
+var maxMissilesAmount = 5;
 
 var mines;
 var minesAmount;
+var maxMinesAmount = 5;
 
 var tree;
 var wall;
@@ -46,8 +48,8 @@ GameStates.Game.prototype = {
     create: function () {
 
         playerHp = playerMaxHp;
-        missilesAmount = 50;
-        minesAmount = 50;
+        missilesAmount = maxMissilesAmount;
+        minesAmount = maxMinesAmount;
 
 
         this.game.world.setBounds(-1000, -1000, 2000, 2000);
@@ -70,6 +72,10 @@ GameStates.Game.prototype = {
         rocketPackagesGroup = this.game.add.group();
         rocketPackagesGroup.enableBody = true;
         rocketPackagesGroup.physicsBodyType = Phaser.Physics.ARCADE;
+
+        minesPackagesGroup = this.game.add.group();
+        minesPackagesGroup.enableBody = true;
+        minesPackagesGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
         turret = this.game.add.sprite(0, 0, 'turret');
         turret.anchor.setTo(0.18, 0.5);
@@ -176,6 +182,12 @@ GameStates.Game.prototype = {
         }
         this.game.physics.arcade.overlap(rocketPackagesGroup, tank, this.playerGetRocketPackage, null, this);
 
+        if (minesPackagesGroup.countLiving() < maxPackages) {
+            this.placeMinePackage(this.game.world.randomX,
+                this.game.world.randomY);
+        }
+        this.game.physics.arcade.overlap(minesPackagesGroup, tank, this.playerGetMinePackage, null, this);
+
         enemiesAlive = 0;
 
         for (var i = 0; i < enemies.length; i++) {
@@ -277,7 +289,14 @@ GameStates.Game.prototype = {
     playerGetRocketPackage: function (tank, rocketPackage) {
 
         rocketPackage.kill();
-        missilesAmount = 5;
+        missilesAmount = maxMissilesAmount;
+
+    },
+
+    playerGetMinePackage: function (tank, minePackage) {
+
+        minePackage.kill();
+        minesAmount = maxMinesAmount;
 
     },
 
@@ -492,10 +511,25 @@ var rocketPackage = function (game, x, y) {
     this.SPEED = 0;
 }
 
+var minePackage = function (game, x, y) {
+    Phaser.Sprite.call(this, game, x, y, 'mines_pack');
+
+    this.anchor.setTo(0.5, 0.5);
+
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    this.SPEED = 0;
+}
+
 healthPackage.prototype = Object.create(Phaser.Sprite.prototype);
 healthPackage.prototype.constructor = healthPackage;
 
 healthPackage.prototype.update = function () { }
+
+minePackage.prototype = Object.create(Phaser.Sprite.prototype);
+minePackage.prototype.constructor = minePackage;
+
+minePackage.prototype.update = function () { }
 
 rocketPackage.prototype = Object.create(Phaser.Sprite.prototype);
 rocketPackage.prototype.constructor = rocketPackage;
@@ -537,4 +571,23 @@ GameStates.Game.prototype.placeRocketPackage = function (x, y) {
     rocketPack.y = y;
 
     return rocketPack;
+};
+
+GameStates.Game.prototype.placeMinePackage = function (x, y) {
+
+    var minePack = minesPackagesGroup.getFirstDead();
+
+    if (minePack === null) {
+
+        minePack = new minePackage(this.game);
+        minesPackagesGroup.add(minePack);
+
+    }
+
+    minePack.revive();
+
+    minePack.x = x;
+    minePack.y = y;
+
+    return minePack;
 };
