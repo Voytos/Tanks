@@ -176,9 +176,29 @@ GameStates.Game.prototype = {
 
         mineKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         mineKey.onDown.add(this.placeMine, this);
+
+        var playerBarConfig = {
+            width: 200,
+            height: 30,
+            x: 850,
+            y: 20,
+            bg: {
+                color: '#003300'
+            },
+            bar: {
+                color: '#00CC00'
+            },
+            animationDuration: 100
+        };
+
+        this.playerHealthBar = new HealthBar(this.game, playerBarConfig);
+        this.playerHealthBar.setFixedToCamera(true);
     },
 
     update: function () {
+
+        this.playerHealthBar.setPercent(playerHp/playerMaxHp*100);
+
         this.game.physics.arcade.overlap(enemyBullets, tank, this.bulletHitPlayer, null, this);
 
         if (packagesGroup.countLiving() < maxPackages) {
@@ -253,12 +273,17 @@ GameStates.Game.prototype = {
     },
 
     render: function () {
-        this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 48);
-        this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 32, 64);
+        this.game.debug.text('Lvl: ' + lvl, 32, 16);
+        
+        this.game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 40);
+        this.game.debug.text('Enemies Damage: ' + enemiesDamage, 32, 56);
+
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
         this.game.debug.text('Mines: ' + minesAmount, 32, 96);
-        this.game.debug.text('Lvl: ' + lvl, 32, 112);
-        this.game.debug.text('Enemies Damage: ' +enemiesDamage, 32, 128);
+
+        this.game.debug.text('Player HP: ' + playerHp + ' / ' + playerMaxHp, 760, 50);
+        
+        
     },
 
     fireBullet: function () {
