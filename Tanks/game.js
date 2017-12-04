@@ -16,6 +16,7 @@ var enemiesAlive = 1;
 var explosions;
 
 var lvl = 1;
+var enemiesDamage = 1;
 
 var startMenu;
 
@@ -257,6 +258,7 @@ GameStates.Game.prototype = {
         this.game.debug.text('Missiles: ' + missilesAmount, 32, 80);
         this.game.debug.text('Mines: ' + minesAmount, 32, 96);
         this.game.debug.text('Lvl: ' + lvl, 32, 112);
+        this.game.debug.text('Enemies Damage: ' +enemiesDamage, 32, 128);
     },
 
     fireBullet: function () {
@@ -323,9 +325,9 @@ GameStates.Game.prototype = {
 
         bullet.kill();
         if (playerHp > 0) {
-            playerHp--;
+            playerHp-=enemiesDamage;
         }
-        if (playerHp == 0) {
+        if (playerHp <= 0) {
             this.gameOver(this);
         }
     },
@@ -345,10 +347,12 @@ GameStates.Game.prototype = {
     },
 
     levelUp: function () {
-        //debugger;
         enemiesTotal += 5;
         enemiesAlive = enemiesTotal;
         lvl++;
+        if (lvl%2==0) {
+            enemiesDamage++;
+        }
         this.game.world.setBounds(0, 0, 1000, 700);
         this.state.start('NextLvl');
     },
@@ -394,6 +398,7 @@ GameStates.Game.prototype = {
         enemiesTotal = 10;
         enemiesAlive = enemiesTotal;
         lvl = 1;
+        enemiesDamage = 1;
         this.state.start('GameOver');
     },
 
