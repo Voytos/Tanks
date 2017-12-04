@@ -7,7 +7,7 @@ GameStates.NextLvl.prototype = {
 
         this.stage.backgroundColor = 'rgb(25,51,0)';
 
-        this.titleText = this.add.text(this.world.centerX, this.world.centerY - 100, "Congratulations you have reached the next level", { font: "180px monospace", fill: "#fff", align: "center" });
+        this.titleText = this.add.text(this.world.centerX, this.world.centerY - 100, "Congratulations you have reached the next level", { font: "32px monospace", fill: "#fff", align: "center" });
         this.titleText.anchor.setTo(0.5, 0.5);
 
         var btn = this.game.add.button(this.world.centerX, this.world.centerY + 200, 'button', this.playGame, this, 2, 1, 0);
